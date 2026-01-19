@@ -51,7 +51,14 @@ def main(p_path, file_path, info_path, n, outpath,bg_path=False):
     file = os.listdir(file_path)
     info = pd.read_csv(info_path, names=['gene', 'chr', 'pos1', 'pos2'])
     if bg_path:
-        bg = pd.read_csv(bg_path, skiprows=list(range(64)), sep='\t')
+        header_lines = 0
+        with open(bg_path) as f:
+            for line in f:
+                if line.startswith("##"):
+                    header_lines += 1
+                else:
+                    break
+        bg = pd.read_csv(bg_path, skiprows=list(range(header_lines)), sep='\t')
     for i in tqdm(file, desc="Removing Background"):
         if i.split('.')[-1] == 'vcf':
             try:
